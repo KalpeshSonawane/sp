@@ -1,0 +1,452 @@
+/********************************************************************
+		ASSIGNMENT NO. 4 (SP) 
+					
+TITLE	: Write a program to implement Lexical Analyzer for subset of C.
+
+
+********************************************************************/
+
+#include<stdio.h>                                                                                 
+#include<string.h>
+#include<ctype.h>
+
+void uniform_sym();			//Function prototypes
+void accept(char key[20]);
+int checkterml(char key[20]);
+void display_uniformtable();
+void display_literaltable();
+void display_terminaltable();
+void display_identifiertable();
+
+char keyArr[200][200]={"(",")","{","}","=","+","-","/","*","<",">",">=","<=","\"",";",":",",","++","--","[","]","\n","\t",
+"%d","%f","%s","%ld","&",
+"auto",
+"break",
+"case","char","const","continue",
+"default","do","double",
+"else","enum","extern",
+"float","for","fscanf","fprintf",
+"goto","getch",
+"if","int",
+"long",
+"main",
+"printf",
+"register","return",
+"short","signed","sizeof","static","struct","switch","scanf",
+"typedef",
+"union","unsigned",
+"void","volatile",
+"while"	};
+
+struct uni			//Structure declaration
+{
+	
+	int index;
+	char class1[20];
+	char tokens[20];
+	
+}u[50];
+
+struct term
+{
+	int index;
+	char symbol[20];
+	
+}t[50];
+
+struct lit
+{
+	
+	int index;
+	char litname[20];
+}l[50];
+
+struct ident
+{
+	int index;
+	char idname[20];
+	int addr;
+	
+}id[50];
+
+/**************************
+Main Function
+**************************/
+int main()		
+{
+
+	uniform_sym();
+	
+	display_uniformtable();
+	display_terminaltable();
+	 display_literaltable();
+	 display_identifiertable();
+	
+	return 0;
+	
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : void uniform_sym()
+INPUT PARAMETER  : -
+OUTPUT PARAMETER : -
+FUNCTION CALLED  : In main()
+FUNCTION CALLING : - accept(key);
+DESCRIPTION      : To read the file contents into array.
+******************************************************/
+void uniform_sym()
+{
+	FILE *fp;
+		char key[100];
+	int i=0;
+	
+	for(i=0;i<100;i++)
+	{
+		
+	}
+	
+	fp=fopen("asm.txt","r");
+	if(fp==NULL)
+	{
+			printf("\nFile not Opened..!!");
+	}
+	else
+	{
+			printf("\nFile Opened..!!\n\n");
+	}
+	printf("KEYWORDS");
+	printf("\n___________________________________________________");
+	while(!feof(fp))
+	{
+
+
+		fscanf(fp,"\n%s",&key);
+		accept(key);	
+	}
+	
+
+}
+
+int n=0,i,tr=0,ltt=0,idd=0;
+
+
+/******************************************************
+FUNCTION NAME 	 : int checkterml(char key[20])
+INPUT PARAMETER  : - char key[20]
+OUTPUT PARAMETER : - interger
+FUNCTION CALLED  : In accept
+FUNCTION CALLING : - 
+DESCRIPTION      : To check if symbol is terminal.
+******************************************************/
+int checkterml(char key[20])
+{	int j=0;
+		while(j<=tr)
+		{
+		if(strcmp(t[j].symbol,key)==0)
+		{
+			return (t[j].index);
+		}
+			j++;
+		}
+		return 0;
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : int checklit(char key[20])
+INPUT PARAMETER  : - char key[20]
+OUTPUT PARAMETER : - interger
+FUNCTION CALLED  : In accept
+FUNCTION CALLING : - 
+DESCRIPTION      : To check if symbol is literal.
+******************************************************/
+int checklit(char key[20])
+{	int j=0;
+		while(j<=ltt)
+		{
+		if(strcmp(l[j].litname,key)==0)
+		{
+			return (l[j].index);
+		}
+			j++;
+		}
+		return 0;
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : int checkidn(char key[20])
+INPUT PARAMETER  : - char key[20]
+OUTPUT PARAMETER : - interger
+FUNCTION CALLED  : In accept
+FUNCTION CALLING : - 
+DESCRIPTION      : To check if symbol is identifier.
+******************************************************/
+int checkidn(char key[20])
+{	int j=0;
+		while(j<=idd)
+		{
+		if(strcmp(id[j].idname,key)==0)
+		{
+			return (id[j].index);
+		}
+			j++;
+		}
+		return 0;
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : void accept(char key[20])
+INPUT PARAMETER  : - char key[20]
+OUTPUT PARAMETER : - 
+FUNCTION CALLED  : In uniform_sym()
+FUNCTION CALLING : - 
+DESCRIPTION      : To sort & accept different symbols.
+******************************************************/
+void accept(char key[20])
+{
+	int flag=0;
+	strcpy(u[n].tokens,key);
+	for(i=0;i<100;i++)
+	{
+		
+		if(strcmp(key,keyArr[i])==0)
+		{
+				strcpy(u[n].class1,"TRM");
+				flag=1;
+				if(checkterml(key)==0)
+				{
+					strcpy(t[tr].symbol,key);
+					t[tr].index=tr+1;
+					u[n].index=t[tr].index;
+					tr++;
+				}
+				else
+				{
+					u[n].index=checkterml(key);	
+				}
+				break;
+		}		
+	}//for loop end
+	
+	if(isdigit(key[0]) && flag==0)
+	{
+			strcpy(u[n].class1,"LIT");
+			flag=1;
+			if(checklit(key)==0)
+			{
+				strcpy(l[ltt].litname,key);
+				l[ltt].index=ltt+1;
+				u[n].index=l[ltt].index;
+				ltt++;
+			}
+			else
+				{
+					u[n].index=checklit(key);	
+				}
+	}
+	
+	if(flag==0)
+	{
+		strcpy(u[n].class1,"IDN");
+				
+		if(checkidn(key)==0)
+		{
+			strcpy(id[idd].idname,key);
+			
+			id[idd].index=idd+1;
+			u[n].index=id[idd].index;
+			idd++;
+		}
+		else
+				{
+					u[n].index=checkidn(key);	
+				}
+				
+	}
+	
+	n++;
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : void display_uniformtable()
+INPUT PARAMETER  : - 
+OUTPUT PARAMETER : - 
+FUNCTION CALLED  : In main()
+FUNCTION CALLING : - 
+DESCRIPTION      : To display Uniform symbol table.
+******************************************************/
+void display_uniformtable()
+{
+		int i;
+	printf("\n\n!.........UNIFORM SYMBOL TABLE.........!");
+	printf("\nINDEX\tCLASS\tTOKENS");
+	printf("\n______________________");
+	for(i=0;i<30;i++)
+	{
+		printf("\n%d\t%s\t%s",u[i].index,u[i].class1,u[i].tokens);
+	}
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : void display_terminaltable()
+INPUT PARAMETER  : - 
+OUTPUT PARAMETER : - 
+FUNCTION CALLED  : In main()
+FUNCTION CALLING : - 
+DESCRIPTION      : To display terminal table
+******************************************************/
+void display_terminaltable()
+{
+		int i;
+	printf("\n\n!.........TERMINAL TABLE.........!");
+	printf("\nSYMBOL\tINDEX");
+	printf("\n______________________");
+	for(i=0;i<tr;i++)
+	{
+		printf("\n%s\t%d",t[i].symbol,t[i].index);
+	}
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : void display_literaltable()
+INPUT PARAMETER  : - 
+OUTPUT PARAMETER : - 
+FUNCTION CALLED  : In main()
+FUNCTION CALLING : - 
+DESCRIPTION      : To display literal table.
+******************************************************/
+void display_literaltable()
+{
+		int i;
+	printf("\n\n!.........LITERAL TABLE.........!");
+	printf("\nINDEX\tLITERAL NAME");
+	printf("\n______________________");
+	for(i=0;i<ltt;i++)
+	{
+		printf("\n%d\t%s",l[i].index,l[i].litname);
+	}
+}
+
+
+/******************************************************
+FUNCTION NAME 	 : void display_identifiertable()
+INPUT PARAMETER  : - 
+OUTPUT PARAMETER : - 
+FUNCTION CALLED  : In main()
+FUNCTION CALLING : - 
+DESCRIPTION      : To display identifier table.
+******************************************************/
+void display_identifiertable()
+{
+		int i;
+	printf("\n\n!.........LITERAL TABLE.........!");
+	printf("\nINDEX\tIDENTIFIER NAME\tADDRESS");
+	printf("\n______________________");
+	for(i=0;i<idd;i++)
+	{
+		printf("\n%d\t%s\t%d",id[i].index,id[i].idname,id[i].addr);
+	}
+}
+
+/*******asm.txt*****************************/
+START 200
+MOVER AREG B
+MOVEM BREG '=2'
+MOVEM BREG '=5'
+LTORG
+ADD CREG A
+SUB CREG '=1'
+LTORG
+MOVEM BREG '=6'
+MOVER AREG '=3'
+B DS  3
+A DC  5
+END 
+
+
+
+/*******************************************************
+			OUTPUT
+			
+
+File Opened..!!
+
+KEYWORDS
+___________________________________________________
+
+!.........UNIFORM SYMBOL TABLE.........!
+INDEX   CLASS   TOKENS
+______________________
+1       IDN     START
+1       LIT     200
+2       IDN     MOVER
+3       IDN     AREG
+4       IDN     B
+5       IDN     MOVEM
+6       IDN     BREG
+7       IDN     '=2'
+5       IDN     MOVEM
+6       IDN     BREG
+8       IDN     '=5'
+9       IDN     LTORG
+10      IDN     ADD
+11      IDN     CREG
+12      IDN     A
+13      IDN     SUB
+11      IDN     CREG
+14      IDN     '=1'
+9       IDN     LTORG
+5       IDN     MOVEM
+6       IDN     BREG
+15      IDN     '=6'
+2       IDN     MOVER
+3       IDN     AREG
+16      IDN     '=3'
+4       IDN     B
+17      IDN     DS
+2       LIT     3
+12      IDN     A
+18      IDN     DC
+
+!.........TERMINAL TABLE.........!
+SYMBOL  INDEX
+______________________
+
+!.........LITERAL TABLE.........!
+INDEX   LITERAL NAME
+______________________
+1       200
+2       3
+3       5
+
+!.........LITERAL TABLE.........!
+INDEX   IDENTIFIER NAME ADDRESS
+______________________
+1       START   0
+2       MOVER   0
+3       AREG    0
+4       B       0
+5       MOVEM   0
+6       BREG    0
+7       '=2'    0
+8       '=5'    0
+9       LTORG   0
+10      ADD     0
+11      CREG    0
+12      A       0
+13      SUB     0
+14      '=1'    0
+15      '=6'    0
+16      '=3'    0
+17      DS      0
+18      DC      0
+19      END     0
+--------------------------------
+Process exited after 0.1593 seconds with return value 0
+Press any key to continue . . .

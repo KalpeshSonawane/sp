@@ -1,0 +1,80 @@
+/*****************************************
+ASSIGNMNET NO: 6
+
+TITLE: Write a program to implement calculator using LEX and YACC
+
+*****************************************/
+
+//cal.l  defination section
+%{
+#include<stdio.h>
+#include<stdlib.h>
+#include"y.tab.h"
+%}
+
+%%   //rule section
+[0-9]+ {yylval.p=atof(yytext); return num; }     //charchetor to float
+[0-9]*\.[0-9]+ {yylval.p=atof(yytext); return num; }
+root return ROOT;
+[ \t];
+\n  return 0;
+.   return yytext[0];
+%%
+
+
+//cal.y   //declaration
+%{
+#include<stdio.h>
+#include<math.h>
+#include<stdlib.h>
+%}
+
+%union
+{double p;}
+
+%token<p>num
+%token SIN COS TAN SQR ROOT
+%left'+''-'
+%left'*''/'
+%type<p>exp
+%%
+ss:exp {printf("=%g\n",$1);}
+;
+exp: exp'+'exp {$$=$1+$3;}
+     |exp'-'exp {$$=$1-$3;}
+     |exp'*'exp {$$=$1*$3;}
+     |exp'/'exp {$$=$1/$3;}
+     |'('exp')' {$$=$2;}
+     |num {$$=$1;}
+     ;
+%%
+
+main()
+{
+   yyparse();
+}
+yyerror(char *s)
+{
+   printf("\nERROR is %s",s);
+}
+yywrap()
+{
+   return 0;
+}
+
+/************************************************
+
+OUTPUT
+
+[te58@itlserver ~]$ vim cal.y
+[te58@itlserver ~]$ lex cal.l
+[te58@itlserver ~]$ yacc -d cal.y
+[te58@itlserver ~]$ cc -c lex.yy.c y.tab.c
+[te58@itlserver ~]$ cc lex.yy.o y.tab.o -lm
+[te58@itlserver ~]$ ./a.out
+45+25*100/4
+=670
+[te58@itlserver ~]$ ./a.out
+67+23-67/2
+=56.5
+****************************************************/

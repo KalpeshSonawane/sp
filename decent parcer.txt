@@ -1,0 +1,106 @@
+/******************************************************************
+ASSIGNMENT NO:5
+
+TITLE: Write a program to implement a Recursive Decent Parser
+
+	
+*******************************************************************/
+
+//prog:
+
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<string.h>
+
+void E();
+void T();
+void F();
+void Eprime();
+void Tprime();
+char input[50];
+int i,flag;
+
+main()
+{
+	i=0;
+	flag=0;
+	printf("\n enter the string:");
+	scanf("%s",input);
+	E();
+	if((strlen(input)==i) && (flag==0))
+	{
+		printf("\n the expression %s is valid",input);
+	}
+	else
+	{
+		printf("\n the expression %s is invalid",input);
+	}
+}
+
+void E()
+{
+ T();
+ Eprime();
+}
+void  Eprime()
+{
+  if(input[i]=='+')
+  {
+	i++;
+	T();
+	Eprime();
+  }
+}
+void T()
+{
+	F();
+	Tprime();
+}
+
+void Tprime()
+{
+	if(input[i]=='*')
+	{
+		i++;
+		F();
+		Tprime();
+	}
+}
+
+void F()
+{
+	if(isalnum(input[i]))
+	i++;
+	else if(input[i]=='(')
+	{
+	  i++;
+	  E();
+	  if(input[i]==')')
+	  i++;
+	  else
+	  	flag=1;
+	  }
+	  else 
+	  	flag=1;
+}
+
+/********************************************************
+
+OUTPUT
+
+ enter the string:(a+b)*c
+
+ the expression (a+b)*c is valid
+--------------------------------
+Process exited after 9.015 seconds with return value 0
+Press any key to continue . . .
+
+
+ enter the string:a-b *c
+
+ the expression a-b is invalid
+--------------------------------
+Process exited after 5.29 seconds with return value 0
+Press any key to continue . . .
+********************************************************/
